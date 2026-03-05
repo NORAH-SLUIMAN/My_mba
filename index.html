@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"/>
+<title>MyMBA Tracker 🎓</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#eef0f8;--card:#fff;--border:#e4e7f5;
+  --t1:#161929;--t2:#4e5575;--t3:#9299bb;
+  --indigo:#4659d4;--indigo-d:#3448c0;--indigo-l:#eef0fb;
+  --violet:#7848d4;--emerald:#059669;--amber:#d97706;--rose:#e0415f;
+  --r:18px;--rs:10px;
+  --sh:0 2px 16px rgba(70,89,212,.07);
+  --sh2:0 8px 36px rgba(70,89,212,.16);
+}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--t1);direction:rtl;text-align:right}
+#app{max-width:500px;margin:0 auto;min-height:100vh}
+@media(min-width:540px){#app{box-shadow:0 0 60px rgba(70,89,212,.1)};body{background:#dde0f0}}
+
+/* USER BAR */
+#userbar{background:var(--card);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:40;box-shadow:0 1px 8px rgba(70,89,212,.06)}
+.ub-lbl{font-size:11px;font-weight:700;color:var(--t3);white-space:nowrap}
+#userSel{flex:1;min-width:0;border:1.5px solid var(--border);border-radius:9px;padding:7px 10px;font-family:inherit;font-size:13px;font-weight:600;color:var(--t1);background:#fff;outline:none;direction:rtl;transition:border-color .15s}
+#userSel:focus{border-color:var(--indigo)}
+.ub-new{border:1.5px solid var(--border);background:#fff;border-radius:9px;padding:7px 11px;font-family:inherit;font-size:12px;font-weight:700;color:var(--indigo);cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s}
+.ub-new:hover{background:var(--indigo-l);border-color:var(--indigo)}
+
+/* TOP BAR */
+#topbar{background:linear-gradient(150deg,#2c3ea8 0%,#4659d4 50%,#7848d4 100%);padding:44px 20px 70px;position:relative;overflow:hidden}
+#topbar::before{content:'';position:absolute;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.055);top:-80px;left:-80px}
+#topbar::after{content:'';position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04);bottom:-60px;right:-20px}
+.tb-in{position:relative;z-index:2}
+.tb-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.tb-brand{display:flex;align-items:center;gap:12px}
+.tb-ico{width:44px;height:44px;background:rgba(255,255,255,.18);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;backdrop-filter:blur(10px)}
+.tb-app{color:#fff;font-size:20px;font-weight:800;line-height:1}
+.tb-sub{color:rgba(255,255,255,.6);font-size:11px;margin-top:2px}
+.tb-addc{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);border-radius:12px;padding:9px 15px;color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;backdrop-filter:blur(10px);transition:background .2s}
+.tb-addc:hover{background:rgba(255,255,255,.25)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.16);border-radius:15px;padding:13px 6px;text-align:center;backdrop-filter:blur(8px)}
+.stat-n{color:#fff;font-size:22px;font-weight:800;line-height:1}
+.stat-l{color:rgba(255,255,255,.6);font-size:11px;margin-top:4px}
+
+/* CONTENT */
+.content{padding:0 14px 90px;margin-top:-44px;position:relative;z-index:10}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-t{font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.08em;text-transform:uppercase}
+
+/* COURSE CARD */
+.ccard{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:16px 16px 14px;margin-bottom:10px;box-shadow:var(--sh);cursor:pointer;transition:transform .18s,box-shadow .18s;animation:fadeUp .35s ease both;position:relative;overflow:hidden}
+.ccard:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.ccard:active{transform:scale(.985)}
+.ccard:nth-child(1){animation-delay:.04s}.ccard:nth-child(2){animation-delay:.08s}.ccard:nth-child(3){animation-delay:.12s}.ccard:nth-child(4){animation-delay:.16s}.ccard:nth-child(5){animation-delay:.2s}
+.cc-acts{position:absolute;top:10px;left:10px;display:flex;gap:3px;opacity:0;transition:opacity .18s;z-index:5}
+.ccard:hover .cc-acts{opacity:1}
+.cca{width:28px;height:28px;border-radius:8px;border:none;background:rgba(255,255,255,.9);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:background .15s;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.cca:hover{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.cc-row{display:flex;align-items:flex-start;gap:12px}
+.cc-ico{width:50px;height:50px;flex-shrink:0;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.16)}
+.cc-body{flex:1;min-width:0}
+.cc-code{font-size:10px;font-weight:700;color:var(--t3);letter-spacing:.07em;margin-bottom:2px}
+.cc-name{font-size:13.5px;font-weight:800;color:var(--t1);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cc-meta{display:flex;align-items:center;gap:8px;margin:8px 0 9px}
+.cc-bdg{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px}
+.cc-cnt{font-size:11px;color:var(--t3)}
+.cc-pb{height:6px;background:#eef0f8;border-radius:99px;overflow:hidden}
+.cc-pf{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.cc-rgt{flex-shrink:0;text-align:left;padding-top:2px}
+.cc-pct{font-size:26px;font-weight:800;line-height:1}
+.cc-pct span{font-size:13px;font-weight:700}
+
+/* DETAIL */
+#detail{display:none;position:fixed;inset:0;background:var(--bg);z-index:100;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#detail.on{display:block;animation:screenIn .22s ease}
+@keyframes screenIn{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.dh{padding:46px 20px 62px;position:relative;overflow:hidden}
+.dh::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06);top:-60px;left:-60px}
+.dh-in{position:relative;z-index:2}
+.back{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.75);background:rgba(255,255,255,.12);border:none;border-radius:10px;padding:8px 14px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:20px;transition:background .15s}
+.back:hover{background:rgba(255,255,255,.22);color:#fff}
+.dh-cr{display:flex;align-items:flex-start;gap:14px}
+.dh-ico{width:58px;height:58px;flex-shrink:0;border-radius:18px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff}
+.dh-code{color:rgba(255,255,255,.65);font-size:10px;font-weight:700;letter-spacing:.1em}
+.dh-name{color:#fff;font-size:17px;font-weight:800;line-height:1.35;margin-top:3px}
+.dh-term{color:rgba(255,255,255,.55);font-size:11px;margin-top:3px}
+.dh-prog{margin-top:18px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:15px 16px}
+.dh-pr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.dh-pl{color:rgba(255,255,255,.75);font-size:13px;font-weight:600}
+.dh-pp{color:#fff;font-size:24px;font-weight:800}
+.dh-pt{height:10px;background:rgba(255,255,255,.18);border-radius:99px;overflow:hidden}
+.dh-pf{height:100%;background:#fff;border-radius:99px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+
+.dc{padding:0 14px 90px;margin-top:-30px;position:relative;z-index:10}
+.dc-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.add-ab{display:flex;align-items:center;gap:6px;background:var(--indigo);color:#fff;border:none;border-radius:11px;padding:9px 14px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(70,89,212,.35);transition:background .15s,transform .15s}
+.add-ab:hover{background:var(--indigo-d);transform:translateY(-1px)}
+
+/* ASSIGNMENT CARD */
+.acard{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:14px 16px;margin-bottom:10px;box-shadow:var(--sh);animation:fadeUp .3s ease both}
+.ac-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.ac-ti{font-size:14px;font-weight:800;color:var(--t1);flex:1;line-height:1.35}
+.ac-btns{display:flex;gap:3px;flex-shrink:0}
+.ac-b{width:30px;height:30px;border-radius:9px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:background .15s}
+.ac-b:hover{background:var(--bg)}
+.ac-b.e:hover{background:var(--indigo-l)}
+.ac-b.d:hover{background:#fdeef2}
+.ac-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:8px}
+.ac-dt{font-size:11px;color:var(--t3);display:flex;align-items:center;gap:4px}
+.ac-dl{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.d-ok{color:#059669;background:#e6f7f2}.d-wn{color:var(--amber);background:#fef3e2}.d-ht{color:var(--rose);background:#fdeef2}
+.ac-pg{display:flex;align-items:center;gap:8px;margin-top:10px}
+.ac-pt{flex:1;height:5px;background:#eef0f8;border-radius:99px;overflow:hidden}
+.ac-pf{height:100%;border-radius:99px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.ac-pn{font-size:10px;font-weight:700;color:var(--t3);min-width:24px;text-align:left}
+.ac-ft{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.sbdg{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid}
+.sb-s{background:#eef0fb;color:var(--indigo);border-color:#c5ccf5}
+.sb-r{background:#fef3e2;color:var(--amber);border-color:#f5dba0}
+.sb-a{background:#e6f7f2;color:var(--emerald);border-color:#9dd8c6}
+.cyc{font-size:11px;font-weight:700;color:var(--indigo);background:var(--indigo-l);border:none;border-radius:9px;padding:6px 11px;cursor:pointer;font-family:inherit;transition:background .15s;white-space:nowrap}
+.cyc:hover{background:#dde2f8}
+.ac-nt{font-size:11px;color:var(--t3);margin-top:8px;line-height:1.5}
+
+/* EMPTY */
+.empty{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:48px 20px;text-align:center;box-shadow:var(--sh)}
+.em-ic{font-size:52px;margin-bottom:14px}
+.em-mg{color:var(--t3);font-size:14px;line-height:1.6}
+
+/* MODAL */
+.ovl{position:fixed;inset:0;background:rgba(12,14,38,.5);backdrop-filter:blur(5px);z-index:200;display:none;align-items:flex-end;justify-content:center;padding:16px}
+.ovl.on{display:flex}
+.modal{background:var(--card);border-radius:24px 24px 20px 20px;width:100%;max-width:490px;max-height:92vh;overflow-y:auto;animation:mUp .25s cubic-bezier(.34,1.25,.64,1)}
+@keyframes mUp{from{opacity:0;transform:translateY(48px)scale(.96)}to{opacity:1;transform:translateY(0)scale(1)}}
+.mh{background:linear-gradient(135deg,var(--indigo),var(--violet));padding:18px 20px;border-radius:24px 24px 0 0;display:flex;align-items:center;justify-content:space-between}
+.mh-t{color:#fff;font-size:15px;font-weight:800}
+.mcl{width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,.18);border:none;color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.mcl:hover{background:rgba(255,255,255,.3)}
+.mbdy{padding:20px}
+.fg{margin-bottom:16px}
+.fl{display:block;font-size:12px;font-weight:700;color:var(--t2);margin-bottom:6px}
+.fi,.fs,.ft{width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:11px 13px;font-family:inherit;font-size:13px;color:var(--t1);background:#fafbff;outline:none;direction:rtl;transition:border-color .15s,box-shadow .15s,background .15s}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(70,89,212,.1);background:#fff}
+.ft{resize:none}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mft{padding:0 20px 20px;display:flex;gap:10px}
+.btn-c{flex:1;padding:13px;border-radius:var(--rs);border:1.5px solid var(--border);background:#fff;font-family:inherit;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;transition:background .15s}
+.btn-c:hover{background:var(--bg)}
+.btn-s{flex:2;padding:13px;border-radius:var(--rs);border:none;background:linear-gradient(135deg,var(--indigo),var(--violet));font-family:inherit;font-size:13px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(70,89,212,.4);transition:opacity .15s,transform .15s}
+.btn-s:hover{opacity:.92;transform:translateY(-1px)}
+.cpkr{display:flex;gap:9px;flex-wrap:wrap;margin-top:2px}
+.csw{width:34px;height:34px;border-radius:10px;cursor:pointer;border:2.5px solid transparent;transition:transform .15s,border-color .15s}
+.csw:hover{transform:scale(1.12)}
+.csw.sel{border-color:var(--t1);transform:scale(1.08)}
+
+/* CONFIRM */
+#cbox{position:fixed;inset:0;background:rgba(12,14,38,.55);backdrop-filter:blur(4px);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+#cbox.on{display:flex}
+.cb{background:#fff;border-radius:20px;padding:28px 24px;width:100%;max-width:340px;box-shadow:0 16px 48px rgba(0,0,0,.18);text-align:center;animation:mUp .2s ease}
+.cb-ic{font-size:40px;margin-bottom:12px}
+.cb-t{font-size:16px;font-weight:800;color:var(--t1);margin-bottom:6px}
+.cb-m{font-size:13px;color:var(--t2);line-height:1.5;margin-bottom:20px}
+.cb-bts{display:flex;gap:10px}
+.cb-no{flex:1;padding:12px;border-radius:var(--rs);border:1.5px solid var(--border);background:#fff;font-family:inherit;font-size:13px;font-weight:600;color:var(--t2);cursor:pointer}
+.cb-yes{flex:1;padding:12px;border-radius:var(--rs);border:none;background:var(--rose);font-family:inherit;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 3px 10px rgba(224,65,95,.35)}
+
+/* TOAST */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--t1);color:#fff;padding:10px 22px;border-radius:99px;font-size:13px;font-weight:600;z-index:500;opacity:0;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.22);transition:opacity .2s,transform .2s;white-space:nowrap}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="userbar">
+    <span class="ub-lbl">👤</span>
+    <select id="userSel" onchange="switchUser()"></select>
+    <button class="ub-new" onclick="addUser()">＋ طالب</button>
+  </div>
+
+  <!-- HOME -->
+  <div id="home">
+    <div id="topbar">
+      <div class="tb-in">
+        <div class="tb-row">
+          <div class="tb-brand">
+            <div class="tb-ico">🎓</div>
+            <div><div class="tb-app">MyMBA Tracker</div><div class="tb-sub">متابعة مواد الماجستير</div></div>
+          </div>
+          <button class="tb-addc" onclick="openCM()">＋ مادة</button>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="stat-n" id="sN">0</div><div class="stat-l">مادة</div></div>
+          <div class="stat"><div class="stat-n" id="sP">0%</div><div class="stat-l">إنجاز كلي</div></div>
+          <div class="stat"><div class="stat-n" id="sD">0</div><div class="stat-l">مكتملة</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="sec-hd">
+        <span class="sec-t">المواد الدراسية</span>
+        <span style="font-size:11px;color:var(--t3)">Spring 2025/2026</span>
+      </div>
+      <div id="cList"></div>
+    </div>
+  </div>
+
+  <!-- DETAIL -->
+  <div id="detail">
+    <div class="dh" id="dhBg">
+      <div class="dh-in">
+        <button class="back" onclick="closeDetail()">→ كل المواد</button>
+        <div class="dh-cr">
+          <div class="dh-ico" id="dhIco"></div>
+          <div><div class="dh-code" id="dhCode"></div><div class="dh-name" id="dhName"></div><div class="dh-term" id="dhTerm"></div></div>
+        </div>
+        <div class="dh-prog">
+          <div class="dh-pr"><span class="dh-pl">تقدم المادة</span><span class="dh-pp" id="dhPct">0%</span></div>
+          <div class="dh-pt"><div class="dh-pf" id="dhFill" style="width:0"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="dc">
+      <div class="dc-hd">
+        <span class="sec-t" id="dhAL">الواجبات</span>
+        <button class="add-ab" onclick="openAM()">＋ واجب</button>
+      </div>
+      <div id="aList"></div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<div id="cbox">
+  <div class="cb">
+    <div class="cb-ic">🗑️</div>
+    <div class="cb-t" id="cbt">تأكيد الحذف</div>
+    <div class="cb-m" id="cbm">هل أنت متأكد؟</div>
+    <div class="cb-bts">
+      <button class="cb-no" onclick="CC(false)">إلغاء</button>
+      <button class="cb-yes" onclick="CC(true)">حذف</button>
+    </div>
+  </div>
+</div>
+
+<!-- Course Modal -->
+<div class="ovl" id="mC" onclick="if(event.target===this)closeCM()">
+  <div class="modal">
+    <div class="mh"><span class="mh-t" id="mCT">إضافة مادة</span><button class="mcl" onclick="closeCM()">✕</button></div>
+    <div class="mbdy">
+      <div class="fg"><label class="fl">كود المادة *</label><input class="fi" id="fCC" placeholder="مثال: LSG921A-1"></div>
+      <div class="fg"><label class="fl">اسم المادة *</label><input class="fi" id="fCN" placeholder="مثال: الاستراتيجية التنافسية"></div>
+      <div class="fg"><label class="fl">الفصل الدراسي</label><input class="fi" id="fCTm" value="Spring 2025/2026"></div>
+      <div class="fg"><label class="fl">اللون</label><div class="cpkr" id="cpkr"></div></div>
+    </div>
+    <div class="mft"><button class="btn-c" onclick="closeCM()">إلغاء</button><button class="btn-s" onclick="saveC()">حفظ المادة</button></div>
+  </div>
+</div>
+
+<!-- Assignment Modal -->
+<div class="ovl" id="mA" onclick="if(event.target===this)closeAM()">
+  <div class="modal">
+    <div class="mh"><span class="mh-t" id="mAT">إضافة واجب</span><button class="mcl" onclick="closeAM()">✕</button></div>
+    <div class="mbdy">
+      <div class="fg"><label class="fl">اسم الواجب *</label><input class="fi" id="aT" placeholder="مثال: Case Study"></div>
+      <div class="frow">
+        <div class="fg" style="margin:0"><label class="fl">تاريخ التسليم</label><input class="fi" id="aD" type="date"></div>
+        <div class="fg" style="margin:0"><label class="fl">نسبة الإنجاز %</label><input class="fi" id="aP" type="number" min="0" max="100" placeholder="تلقائي"></div>
+      </div>
+      <div class="fg" style="margin-top:14px"><label class="fl">الحالة</label>
+        <select class="fs" id="aS">
+          <option value="تم الإرسال للمكتبة">📬 تم الإرسال للمكتبة</option>
+          <option value="تعديل ومراجعة">✏️ تعديل ومراجعة</option>
+          <option value="اعتماد">✅ اعتماد</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">ملاحظات</label><textarea class="ft" id="aN" rows="2" placeholder="تفاصيل إضافية..."></textarea></div>
+    </div>
+    <div class="mft"><button class="btn-c" onclick="closeAM()">إلغاء</button><button class="btn-s" onclick="saveA()">حفظ الواجب</button></div>
+  </div>
+</div>
+
+<script>
+const COLS=[
+  {k:'indigo', g:'linear-gradient(135deg,#4659d4,#2c3ea8)',l:'#eef0fb',t:'#4659d4'},
+  {k:'violet', g:'linear-gradient(135deg,#7848d4,#5e2eb8)',l:'#f3edfb',t:'#7848d4'},
+  {k:'emerald',g:'linear-gradient(135deg,#059669,#047857)',l:'#e6f7f2',t:'#059669'},
+  {k:'amber',  g:'linear-gradient(135deg,#d97706,#b45309)',l:'#fef3e2',t:'#d97706'},
+  {k:'rose',   g:'linear-gradient(135deg,#e0415f,#be1844)',l:'#fdeef2',t:'#e0415f'},
+  {k:'sky',    g:'linear-gradient(135deg,#0284c7,#0369a1)',l:'#e0f2fe',t:'#0284c7'},
+  {k:'teal',   g:'linear-gradient(135deg,#0f766e,#115e59)',l:'#e6f7f5',t:'#0f766e'},
+  {k:'orange', g:'linear-gradient(135deg,#ea580c,#c2410c)',l:'#fff0e6',t:'#ea580c'},
+];
+const SP={'تم الإرسال للمكتبة':40,'تعديل ومراجعة':70,'اعتماد':100};
+const SN={'تم الإرسال للمكتبة':'تعديل ومراجعة','تعديل ومراجعة':'اعتماد','اعتماد':'تم الإرسال للمكتبة'};
+const SC={'تم الإرسال للمكتبة':'sb-s','تعديل ومراجعة':'sb-r','اعتماد':'sb-a'};
+const SI={'تم الإرسال للمكتبة':'📬','تعديل ومراجعة':'✏️','اعتماد':'✅'};
+
+let CU='';
+const UK=u=>'mba3_'+u;
+const LD=()=>{try{return JSON.parse(localStorage.getItem(UK(CU))||'null')||{courses:[]}}catch{return{courses:[]}}};
+const SD=d=>localStorage.setItem(UK(CU),JSON.stringify(d));
+const GU=()=>{try{return JSON.parse(localStorage.getItem('mba_u3')||'[]')}catch{return[]}};
+const SU=u=>localStorage.setItem('mba_u3',JSON.stringify(u));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ── USERS ──
+function initU(){
+  let u=GU();if(!u.length){u=['طالبي'];SU(u)}
+  CU=localStorage.getItem('mba_cu3')||u[0];
+  if(!u.includes(CU))CU=u[0];
+  localStorage.setItem('mba_cu3',CU);
+  rebuildSel(u);
+}
+function rebuildSel(users){
+  document.getElementById('userSel').innerHTML=users.map(u=>`<option value="${esc(u)}"${u===CU?' selected':''}>${esc(u)}</option>`).join('');
+}
+function switchUser(){
+  CU=document.getElementById('userSel').value;
+  localStorage.setItem('mba_cu3',CU);
+  closeDetail();render();
+}
+function addUser(){
+  const n=(prompt('اسم الطالب الجديد:')||'').trim();
+  if(!n)return;
+  const u=GU();
+  if(u.includes(n)){toast('هذا الاسم موجود ⚠️');return}
+  u.push(n);SU(u);CU=n;
+  localStorage.setItem('mba_cu3',CU);
+  if(!LD().courses.length)seed();
+  rebuildSel(u);render();
+  toast('مرحباً '+n+' 👋');
+}
+
+// ── SEED ──
+function seed(){
+  const mk=(t,d,s)=>({id:uid(),title:t,due:d,status:s,pct:null,notes:''});
+  SD({courses:[
+    {id:uid(),code:'LSG921A-1',name:'الاستراتيجية التنافسية وتصميم الأعمال',term:'Spring 2025/2026',color:'indigo',
+     assignments:[mk('Case Study','2026-03-20','تم الإرسال للمكتبة'),mk('Presentation','2026-03-27','تعديل ومراجعة')]},
+    {id:uid(),code:'LSG922A-1',name:'تعزيز وتوجيه الابتكار الاستراتيجي',term:'Spring 2025/2026',color:'violet',
+     assignments:[mk('Innovation Report','2026-03-22','تم الإرسال للمكتبة')]},
+    {id:uid(),code:'LSG923A-1',name:'التغيير التنظيمي في العصر الرقمي',term:'Spring 2025/2026',color:'emerald',
+     assignments:[mk('Digital Change Essay','2026-03-25','اعتماد')]},
+    {id:uid(),code:'LSG924A-1',name:'ديناميكية القيادة للابتكار',term:'Spring 2025/2026',color:'amber',
+     assignments:[mk('Leadership Reflection','2026-03-29','تعديل ومراجعة')]},
+    {id:uid(),code:'MBA906A-LS1-PMG-1',name:'الاقتصاد والتمويل العالمي',term:'Spring 2025/2026',color:'rose',
+     assignments:[mk('Globalization Case','2026-03-18','تم الإرسال للمكتبة')]},
+  ]});
+}
+
+// ── HELPERS ──
+const gcol=k=>COLS.find(c=>c.k===k)||COLS[0];
+const apct=a=>a.pct!=null?a.pct:(SP[a.status]||0);
+const cpct=c=>c.assignments.length?Math.round(c.assignments.reduce((s,a)=>s+apct(a),0)/c.assignments.length):0;
+function dl(due){
+  if(!due)return null;
+  const d=new Date(due),n=new Date();
+  return Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/86400000);
+}
+function dlbl(days){
+  if(days===null)return{t:'',c:''};
+  if(days<0)return{t:`تأخر ${Math.abs(days)} يوم`,c:'d-ht'};
+  if(days===0)return{t:'اليوم آخر يوم!',c:'d-ht'};
+  if(days<=3)return{t:`باقي ${days} أيام`,c:'d-ht'};
+  if(days<=7)return{t:`باقي ${days} أيام`,c:'d-wn'};
+  return{t:`باقي ${days} يوم`,c:'d-ok'};
+}
+function fdt(due){
+  if(!due)return'';
+  return new Date(due).toLocaleDateString('ar-SA',{year:'numeric',month:'short',day:'numeric'});
+}
+let tTm;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('on');
+  clearTimeout(tTm);tTm=setTimeout(()=>t.classList.remove('on'),2400);
+}
+
+// ── RENDER HOME ──
+function render(){
+  const {courses}=LD();
+  const tot=courses.length;
+  const ov=tot?Math.round(courses.reduce((s,c)=>s+cpct(c),0)/tot):0;
+  const dn=courses.filter(c=>cpct(c)===100).length;
+  document.getElementById('sN').textContent=tot;
+  document.getElementById('sP').textContent=ov+'%';
+  document.getElementById('sD').textContent=dn;
+  const el=document.getElementById('cList');
+  if(!tot){
+    el.innerHTML=`<div class="empty"><div class="em-ic">📚</div><div class="em-mg">لا توجد مواد مضافة بعد<br>اضغط "＋ مادة" لتبدأ</div></div>`;return;
+  }
+  el.innerHTML=courses.map(c=>{
+    const p=cpct(c),cl=gcol(c.color),ic=c.name.charAt(0);
+    return`<div class="ccard" onclick="openD('${c.id}')">
+      <div class="cc-acts">
+        <button class="cca" onclick="event.stopPropagation();editC('${c.id}')" title="تعديل">✏️</button>
+        <button class="cca" onclick="event.stopPropagation();delC('${c.id}')" title="حذف">🗑️</button>
+      </div>
+      <div class="cc-row">
+        <div class="cc-ico" style="background:${cl.g}">${ic}</div>
+        <div class="cc-body">
+          <div class="cc-code">${esc(c.code)}</div>
+          <div class="cc-name">${esc(c.name)}</div>
+          <div class="cc-meta">
+            <span class="cc-bdg" style="background:${cl.l};color:${cl.t}">${esc(c.term)}</span>
+            <span class="cc-cnt">${c.assignments.length} واجب</span>
+          </div>
+          <div class="cc-pb"><div class="cc-pf" style="width:${p}%;background:${cl.g}"></div></div>
+        </div>
+        <div class="cc-rgt"><div class="cc-pct" style="color:${cl.t}">${p}<span>%</span></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── DETAIL ──
+let ACI=null;
+function openD(cid){ACI=cid;rdtl();document.getElementById('detail').classList.add('on');document.getElementById('detail').scrollTop=0}
+function closeDetail(){document.getElementById('detail').classList.remove('on');ACI=null}
+function rdtl(){
+  if(!ACI)return;
+  const {courses}=LD();
+  const c=courses.find(x=>x.id===ACI);
+  if(!c){closeDetail();return}
+  const p=cpct(c),cl=gcol(c.color);
+  document.getElementById('dhBg').style.background=cl.g;
+  document.getElementById('dhIco').textContent=c.name.charAt(0);
+  document.getElementById('dhCode').textContent=c.code;
+  document.getElementById('dhName').textContent=c.name;
+  document.getElementById('dhTerm').textContent=c.term;
+  document.getElementById('dhPct').textContent=p+'%';
+  document.getElementById('dhFill').style.width=p+'%';
+  document.getElementById('dhAL').textContent=`الواجبات (${c.assignments.length})`;
+  const el=document.getElementById('aList');
+  if(!c.assignments.length){
+    el.innerHTML=`<div class="empty"><div class="em-ic">📝</div><div class="em-mg">لا توجد واجبات بعد<br>اضغط "＋ واجب" لإضافة</div></div>`;return;
+  }
+  el.innerHTML=c.assignments.map(a=>{
+    const p2=apct(a),dls=dl(a.due),{t:dt,c:dc}=dlbl(dls),sc=SC[a.status]||'sb-s',si=SI[a.status]||'📋';
+    return`<div class="acard">
+      <div class="ac-top">
+        <div class="ac-ti">${esc(a.title)}</div>
+        <div class="ac-btns">
+          <button class="ac-b e" onclick="editA('${a.id}')">✏️</button>
+          <button class="ac-b d" onclick="delA('${a.id}')">🗑️</button>
+        </div>
+      </div>
+      <div class="ac-meta">
+        ${a.due?`<span class="ac-dt">📅 ${fdt(a.due)}</span>`:''}
+        ${dt?`<span class="ac-dl ${dc}">${dt}</span>`:''}
+      </div>
+      <div class="ac-pg">
+        <div class="ac-pt"><div class="ac-pf" style="width:${p2}%;background:${cl.g}"></div></div>
+        <div class="ac-pn">${p2}%</div>
+      </div>
+      <div class="ac-ft">
+        <span class="sbdg ${sc}">${si} ${esc(a.status)}</span>
+        <button class="cyc" onclick="cycSt('${a.id}')">تغيير الحالة ←</button>
+      </div>
+      ${a.notes?`<div class="ac-nt">${esc(a.notes)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function cycSt(aid){
+  const d=LD(),c=d.courses.find(x=>x.id===ACI),a=c?.assignments.find(x=>x.id===aid);
+  if(!a)return;a.status=SN[a.status]||'تم الإرسال للمكتبة';
+  SD(d);rdtl();render();toast('الحالة: '+a.status);
+}
+function delA(aid){
+  C2('حذف الواجب','هل تريد حذف هذا الواجب نهائياً؟',()=>{
+    const d=LD(),c=d.courses.find(x=>x.id===ACI);
+    if(!c)return;c.assignments=c.assignments.filter(a=>a.id!==aid);
+    SD(d);rdtl();render();toast('تم حذف الواجب 🗑️');
+  });
+}
+
+// ── COURSE MODAL ──
+let ECI=null,EC='indigo';
+function bPkr(){
+  document.getElementById('cpkr').innerHTML=COLS.map(c=>`<div class="csw${c.k===EC?' sel':''}" style="background:${c.g}" onclick="pCol('${c.k}')"></div>`).join('');
+}
+function pCol(k){EC=k;bPkr()}
+function openCM(cid){
+  ECI=cid||null;EC='indigo';
+  if(cid){
+    const c=LD().courses.find(x=>x.id===cid);if(!c)return;
+    document.getElementById('mCT').textContent='تعديل المادة';
+    document.getElementById('fCC').value=c.code;
+    document.getElementById('fCN').value=c.name;
+    document.getElementById('fCTm').value=c.term;
+    EC=c.color;
+  }else{
+    document.getElementById('mCT').textContent='إضافة مادة جديدة';
+    ['fCC','fCN'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fCTm').value='Spring 2025/2026';
+  }
+  bPkr();document.getElementById('mC').classList.add('on');
+}
+function editC(cid){openCM(cid)}
+function closeCM(){document.getElementById('mC').classList.remove('on')}
+function saveC(){
+  const code=document.getElementById('fCC').value.trim();
+  const name=document.getElementById('fCN').value.trim();
+  const term=document.getElementById('fCTm').value.trim()||'Spring 2025/2026';
+  if(!code||!name){toast('يرجى ملء الكود والاسم ⚠️');return}
+  const d=LD();
+  if(ECI){const c=d.courses.find(x=>x.id===ECI);if(c){c.code=code;c.name=name;c.term=term;c.color=EC}}
+  else d.courses.push({id:uid(),code,name,term,color:EC,assignments:[]});
+  SD(d);closeCM();render();if(ACI)rdtl();
+  toast(ECI?'تم تعديل المادة ✓':'تم إضافة المادة ✓');
+}
+function delC(cid){
+  const c=LD().courses.find(x=>x.id===cid);if(!c)return;
+  C2('حذف المادة',`سيتم حذف "${c.name}" وجميع واجباتها`,()=>{
+    const d=LD();d.courses=d.courses.filter(x=>x.id!==cid);SD(d);render();toast('تم حذف المادة 🗑️');
+  });
+}
+
+// ── ASSIGNMENT MODAL ──
+let EAI=null;
+function openAM(aid){
+  EAI=aid||null;
+  if(aid){
+    const a=LD().courses.find(x=>x.id===ACI)?.assignments.find(x=>x.id===aid);if(!a)return;
+    document.getElementById('mAT').textContent='تعديل الواجب';
+    document.getElementById('aT').value=a.title;
+    document.getElementById('aD').value=a.due||'';
+    document.getElementById('aP').value=a.pct!=null?a.pct:'';
+    document.getElementById('aS').value=a.status;
+    document.getElementById('aN').value=a.notes||'';
+  }else{
+    document.getElementById('mAT').textContent='إضافة واجب جديد';
+    ['aT','aD','aP','aN'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('aS').value='تم الإرسال للمكتبة';
+  }
+  document.getElementById('mA').classList.add('on');
+}
+function editA(aid){openAM(aid)}
+function closeAM(){document.getElementById('mA').classList.remove('on')}
+function saveA(){
+  const title=document.getElementById('aT').value.trim();
+  if(!title){toast('يرجى كتابة اسم الواجب ⚠️');return}
+  const due=document.getElementById('aD').value||null;
+  const pr=document.getElementById('aP').value;
+  const pct=pr!==''?Math.min(100,Math.max(0,parseInt(pr)||0)):null;
+  const status=document.getElementById('aS').value;
+  const notes=document.getElementById('aN').value.trim();
+  const d=LD(),c=d.courses.find(x=>x.id===ACI);if(!c)return;
+  if(EAI){const a=c.assignments.find(x=>x.id===EAI);if(a){a.title=title;a.due=due;a.pct=pct;a.status=status;a.notes=notes}}
+  else c.assignments.push({id:uid(),title,due,pct,status,notes});
+  SD(d);closeAM();rdtl();render();
+  toast(EAI?'تم تعديل الواجب ✓':'تم إضافة الواجب ✓');
+}
+
+// ── CONFIRM ──
+let CCB=null;
+function C2(title,msg,cb){
+  document.getElementById('cbt').textContent=title;
+  document.getElementById('cbm').textContent=msg;
+  CCB=cb;document.getElementById('cbox').classList.add('on');
+}
+function CC(yes){
+  document.getElementById('cbox').classList.remove('on');
+  if(yes&&CCB)CCB();CCB=null;
+}
+
+// ── INIT ──
+initU();
+if(!LD().courses.length)seed();
+render();
+</script>
+</body>
+</html>
